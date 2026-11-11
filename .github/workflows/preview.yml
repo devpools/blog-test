@@ -44,7 +44,7 @@ jobs:
 
       - name: Preview base URL
         id: base
-        run: echo "url=$(printf '%s' "$SITE_URL" | sed -E 's#^[a-zA-Z]+://##; s#/*$#/#')" >> "$GITHUB_OUTPUT"
+        run: echo "url=$(printf '%s' "$SITE_URL" | sed -E 's#^[a-zA-Z]+://##; s#/*$##')" >> "$GITHUB_OUTPUT"
         env:
           SITE_URL: ${{ vars.SITE_URL }}
 
