@@ -34,3 +34,6 @@ root="${path%/}/"
 echo "url=${url} root=${root} noindex=${NOINDEX:-false}"
 
 HEXO_NOINDEX="${NOINDEX:-}" npx hexo generate --config _config.yml,_config.ci.yml
+
+# GitHub Pages 가 결과물을 Jekyll 로 다시 처리하지 않게 한다
+touch public/.nojekyll
