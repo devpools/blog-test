@@ -1,0 +1,73 @@
+# hueman 테마 설정 (themes/hueman/_config.yml 대신 사이트 루트에서 관리)
+menu:
+    Home: /
+    About: /about/index.html
+
+customize:
+    logo:
+        width: 45
+        height: 46
+        # css/style.css 기준 상대 경로: 사이트 root 가 하위 경로여도 동작한다
+        url: ../images/devpools_logo.png
+    theme_color: '#006bde'
+    highlight: androidstudio
+    sidebar: left
+    thumbnail: true
+    favicon:
+    social_links:
+        github: https://github.com/devpools
+        facebook: https://www.facebook.com/groups/1685004178439716/
+        rss: /atom.xml
+
+widgets:
+    - recent_posts
+    - category
+    - archive
+    - tag
+    - tagcloud
+    - links
+
+search:
+    insight: true
+    swiftype:
+    baidu: false
+
+comment:
+    disqus:
+    duoshuo:
+    youyan:
+    facebook:
+    isso:
+    changyan:
+        appId:
+        appKey:
+        on:
+    valine:
+        on:
+        appId:
+        appKey:
+        notify:
+        verify:
+        placeholder:
+
+share: default
+
+plugins:
+    lightgallery: true
+    justifiedgallery: true
+    google_analytics: UA-74651367-1
+    baidu_analytics:
+    bing_site_verification:
+    mathjax: false
+
+miscellaneous:
+    open_graph:
+        fb_app_id:
+        fb_admins:
+        twitter_id:
+        google_plus:
+    links:
+        Hexo: http://hexo.io
+        keen: http://keen.devpools.kr
+        alex: http://alex.devpools.kr
+        tiffany: http://tiffany.devpools.kr

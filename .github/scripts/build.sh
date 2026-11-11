@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# CI 빌드: 배포 위치에 맞춰 Hexo 의 url/root 를 덮어쓴 뒤 public/ 을 만든다.
+#
+#   SITE_URL   정식 사이트 주소 (예: https://www.devpools.kr 또는 https://www.devpools.kr/blog-test)
+#   SUBPATH    그 아래 하위 경로 (미리보기일 때만, 예: pr-preview/pr-12)
+#   NOINDEX    "true" 면 검색엔진 차단 메타 태그를 넣고 Google Analytics 를 끈다
+set -euo pipefail
+
+if [[ -z "${SITE_URL:-}" ]]; then
+  echo "::error::저장소 변수 SITE_URL 이 없습니다 (Settings > Secrets and variables > Actions > Variables)" >&2
+  exit 1
+fi
+
+url="${SITE_URL%/}"
+if [[ -n "${SUBPATH:-}" ]]; then
+  subpath="${SUBPATH#/}"
+  url="${url}/${subpath%/}"
+fi
+
+# https://host/a/b -> /a/b/ ,  https://host -> /
+path="$(printf '%s' "$url" | sed -E 's#^[a-zA-Z]+://[^/]+##')"
+root="${path%/}/"
+
+{
+  echo "url: ${url}"
+  echo "root: ${root}"
+  if [[ "${NOINDEX:-}" == "true" ]]; then
+    echo "theme_config:"
+    echo "  plugins:"
+    echo "    google_analytics:"
+  fi
+} > _config.ci.yml
+
+echo "url=${url} root=${root} noindex=${NOINDEX:-false}"
+
+HEXO_NOINDEX="${NOINDEX:-}" npx hexo generate --config _config.yml,_config.ci.yml

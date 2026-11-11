@@ -1,0 +1,58 @@
+# PR 이 열리거나 갱신되면 gh-pages 브랜치의 pr-preview/pr-<번호>/ 에 미리보기를 올리고,
+# PR 이 닫히면(머지 포함) 미리보기를 지운다.
+name: Deploy PR preview
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency: preview-${{ github.ref }}
+
+jobs:
+  preview:
+    # 포크에서 온 PR 은 토큰이 읽기 전용이라 배포할 수 없다
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Setup Node
+        if: github.event.action != 'closed'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        if: github.event.action != 'closed'
+        run: npm ci
+
+      - name: Build
+        if: github.event.action != 'closed'
+        run: .github/scripts/build.sh
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          SUBPATH: pr-preview/pr-${{ github.event.number }}
+          NOINDEX: 'true'
+
+      - name: Preview base URL
+        id: base
+        run: echo "url=$(printf '%s' "$SITE_URL" | sed -E 's#^[a-zA-Z]+://##; s#/*$#/#')" >> "$GITHUB_OUTPUT"
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+
+      - name: Deploy preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: public
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          pages-base-url: ${{ steps.base.outputs.url }}
+          wait-for-pages-deployment: true
